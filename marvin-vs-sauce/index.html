@@ -124,7 +124,7 @@ body.dead #game canvas{filter:grayscale(1) brightness(.7)}
 #tabbtn{position:absolute;pointer-events:auto}
 
 /* ----- Mobile ----- */
-body.touch{--btn:clamp(44px,13.5vh,64px)}
+body.touch{--btn:calc(clamp(44px,13.5vh,64px) * var(--btnscale,1))}
 body.touch #bar{left:auto;right:calc(6px + env(safe-area-inset-right));bottom:6px;transform:none;display:grid;grid-template-columns:repeat(5,var(--btn));gap:5px;padding:5px}
 body.touch .ab .k{font-size:10px}
 body.touch #castbar{bottom:auto;top:44px;width:220px}
@@ -157,6 +157,27 @@ body.touch #errors div{font-size:14px}
 #death .line b{color:#ff5a3a}
 #death .mock{font-style:italic;color:#f3e2c0;margin:12px 0 16px;font-size:15px}
 #death .best{font-size:12px;color:#aaa;margin-top:10px}
+/* ---------- Options ---------- */
+.medbtn{pointer-events:auto;margin-top:12px;font-size:14px;color:#ffe9a8;cursor:pointer;padding:7px 18px;border-radius:6px;border:2px solid var(--gold);background:linear-gradient(#4a2a14,#24140a)}
+#options{z-index:55;background:rgba(0,0,0,.55)}
+.opanel{background:rgba(14,9,6,.96);border:3px solid var(--gold);border-radius:10px;width:min(560px,94vw);max-height:92vh;display:flex;flex-direction:column;text-align:left;box-shadow:0 0 40px #000}
+.ohead{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;font-family:Cinzel,Georgia,serif;font-size:22px;font-weight:900;color:#ffd36a;border-bottom:1px solid #5a4020}
+.otabs{display:flex;gap:4px;padding:8px 12px 0}
+.otab{flex:1;padding:7px;font-size:14px;color:#ccc;background:#2a1a0e;border:1px solid #5a4020;border-bottom:none;border-radius:6px 6px 0 0;cursor:pointer}
+.otab.on{color:#ffd100;background:#3e2614;border-color:var(--gold)}
+.opane{overflow-y:auto;padding:8px 14px 14px;border-top:1px solid var(--gold);-webkit-overflow-scrolling:touch;touch-action:pan-y}
+.onote{font-size:12px;color:#bba;margin:4px 0 6px}
+.og{color:#ffd100;font-weight:bold;font-size:13px;margin:10px 0 4px;border-bottom:1px solid #3a2a18;padding-bottom:2px}
+.orow{display:flex;align-items:center;gap:8px;padding:3px 0;font-size:13px;color:#eee}
+.orow .ol{flex:1}
+.orow .ov{width:44px;text-align:right;color:#ffd36a;font-size:12px}
+.orow input[type=range]{width:46%;accent-color:#c9a64a}
+.orow input[type=checkbox]{width:20px;height:20px;accent-color:#c9a64a}
+.kb{min-width:92px;padding:5px 6px;font-size:13px;color:#fff;background:linear-gradient(#3e3a52,#14121c);border:1px solid #777;border-radius:4px;cursor:pointer}
+.kb.empty{color:#777}
+.kb.wait{border-color:#ffe76a;color:#ffe76a;box-shadow:0 0 8px #ffe76a;font-size:11px}
+body.nofloats .ft{display:none}
+body.nochat #chat{display:none}
 #rotate{background:#120804;z-index:60;font-size:20px;color:#ffd36a}
 #rotate .ph{font-size:60px;animation:rot 2s infinite}
 @keyframes rot{0%,30%{transform:rotate(0)}60%,100%{transform:rotate(90deg)}}
@@ -229,6 +250,7 @@ body.touch #errors div{font-size:14px}
     <span id="latency">Latence : 42 ms</span>
     <button class="ibtn" id="musicbtn" title="Musique">🎵</button>
     <button class="ibtn" id="mutebtn" title="Couper le son">🔊</button>
+    <button class="ibtn" id="optbtn" title="Options (Échap)">⚙️</button>
   </div>
   <div id="errors"></div>
   <div id="raidwarn"></div>
@@ -246,6 +268,7 @@ body.touch #errors div{font-size:14px}
   <h1>Marvin HD <em>contre</em> Sauce</h1>
   <h2>Duel devant les portes d'Orgrimmar</h2>
   <button class="bigbtn" id="startbtn">Entrer dans l'arène</button>
+  <button class="medbtn" id="menuopt">⚙️ Options</button>
   <div class="ctrls" id="ctrlpc">
     <b>Déplacement :</b> ZQSD ou flèches — <b>Saut :</b> Espace<br>
     <b>Caméra :</b> clic maintenu + souris, molette pour zoomer<br>
@@ -269,6 +292,31 @@ body.touch #errors div{font-size:14px}
     <div class="mock" id="dmock"></div>
     <button class="bigbtn" id="retrybtn">Retenter</button>
     <div class="best" id="dbest"></div>
+  </div>
+</div>
+
+<div id="options" class="screen hidden">
+  <div class="opanel">
+    <div class="ohead"><span>Options</span><button class="ibtn" id="o_close" title="Fermer">✕</button></div>
+    <div class="otabs"><button class="otab on" id="optTabKeys" data-p="paneKeys">Touches</button><button class="otab" data-p="paneGen">Général</button></div>
+    <div class="opane" id="paneKeys">
+      <p class="onote">Clique sur une case puis appuie sur la touche voulue. <b>Échap</b> annule, <b>Retour</b> efface. Deux touches possibles par action.</p>
+      <div id="optbinds"></div>
+      <button class="medbtn" id="o_resetkeys">Touches par défaut</button>
+    </div>
+    <div class="opane hidden" id="paneGen">
+      <div class="og">Caméra</div>
+      <label class="orow"><span class="ol">Sensibilité</span><input type="range" id="o_sens" min="0.3" max="2.5" step="0.05"><span class="ov" id="o_sensv"></span></label>
+      <label class="orow"><span class="ol">Inverser l'axe vertical</span><input type="checkbox" id="o_inv"></label>
+      <div class="og">Son</div>
+      <label class="orow"><span class="ol">Volume général</span><input type="range" id="o_vol" min="0" max="100" step="1"><span class="ov" id="o_volv"></span></label>
+      <label class="orow"><span class="ol">Volume de la musique</span><input type="range" id="o_mus" min="0" max="100" step="1"><span class="ov" id="o_musv"></span></label>
+      <div class="og">Interface</div>
+      <label class="orow" id="o_btnrow"><span class="ol">Taille des boutons</span><input type="range" id="o_btn" min="0.75" max="1.3" step="0.05"><span class="ov" id="o_btnv"></span></label>
+      <label class="orow"><span class="ol">Textes de dégâts flottants</span><input type="checkbox" id="o_ft"></label>
+      <label class="orow"><span class="ol">Fenêtre de discussion</span><input type="checkbox" id="o_chat"></label>
+      <button class="medbtn" id="o_resetall">Tout réinitialiser</button>
+    </div>
   </div>
 </div>
 
@@ -309,6 +357,50 @@ const store = {
 };
 
 /* =====================================================================
+   0 bis. OPTIONS DU JOUEUR (sauvegardées dans le navigateur)
+   ===================================================================== */
+// Actions configurables. e.code = position physique de la touche (ZQSD en AZERTY = WASD en QWERTY).
+const ACTIONS = [
+  { id: 'fwd', label: 'Avancer', group: 'Déplacement' },
+  { id: 'back', label: 'Reculer', group: 'Déplacement' },
+  { id: 'left', label: 'Aller à gauche', group: 'Déplacement' },
+  { id: 'right', label: 'Aller à droite', group: 'Déplacement' },
+  { id: 'jump', label: 'Sauter', group: 'Déplacement' },
+  { id: 'target', label: 'Cibler Sauce', group: 'Combat' },
+  ...['Éclair de givre', 'Boule de feu', 'Trait de feu', 'Nova de givre', 'Transfert', 'Cône de froid', 'Métamorphose', 'Contresort', 'Bloc de glace', 'Évocation']
+    .map((n, i) => ({ id: 'spell' + i, label: `${i === 9 ? 0 : i + 1}. ${n}`, group: 'Sorts' })),
+];
+function defaultBinds() {
+  const b = { fwd: ['KeyW', 'ArrowUp'], back: ['KeyS', 'ArrowDown'], left: ['KeyA', 'ArrowLeft'], right: ['KeyD', 'ArrowRight'], jump: ['Space', ''], target: ['Tab', ''] };
+  for (let i = 0; i < 10; i++) { const n = (i + 1) % 10; b['spell' + i] = ['Digit' + n, 'Numpad' + n]; }
+  return b;
+}
+function defaultOpts() { return { binds: defaultBinds(), sens: 1, invertY: false, vol: 80, musVol: 50, btnScale: 1, floats: true, chat: true }; }
+let OPT = (() => {
+  const d = defaultOpts(), s = store.get('mvs_opts', {}) || {};
+  const o = Object.assign(d, s); o.binds = Object.assign(defaultBinds(), s.binds || {});
+  return o;
+})();
+const act = {}; // actions de déplacement en cours (compteur de touches enfoncées)
+let layoutMap = null;
+const FR_AZERTY = { KeyQ: 'A', KeyW: 'Z', KeyA: 'Q', KeyZ: 'W', KeyM: ',', Semicolon: 'M' };
+const KEYNAMES = { Space: 'Espace', Tab: 'Tab', ArrowUp: '↑', ArrowDown: '↓', ArrowLeft: '←', ArrowRight: '→', Enter: 'Entrée', ShiftLeft: 'Maj G', ShiftRight: 'Maj D',
+  ControlLeft: 'Ctrl G', ControlRight: 'Ctrl D', AltLeft: 'Alt', AltRight: 'Alt Gr', CapsLock: 'Verr. Maj', Backquote: '²', Minus: ')', Equal: '=', Backspace: 'Retour' };
+function keyLabel(code, short) {
+  if (!code) return '';
+  let m;
+  if ((m = code.match(/^Digit(\d)$/))) return m[1];
+  if ((m = code.match(/^Numpad(\d)$/))) return short ? 'P' + m[1] : 'Pavé ' + m[1];
+  if ((m = code.match(/^F(\d+)$/))) return code;
+  if (KEYNAMES[code]) return short ? KEYNAMES[code].replace('Espace', 'Esp').replace(' G', '').replace(' D', '') : KEYNAMES[code];
+  const lm = layoutMap && layoutMap.get(code);
+  if (lm) return lm.toUpperCase();
+  if (/^fr/i.test(navigator.language) && FR_AZERTY[code]) return FR_AZERTY[code];
+  if ((m = code.match(/^Key([A-Z])$/))) return m[1];
+  return code.replace(/^Numpad/, 'Pavé ');
+}
+
+/* =====================================================================
    1. SONS (WebAudio, 100 % générés)
    ===================================================================== */
 const Snd = {
@@ -317,15 +409,18 @@ const Snd = {
     if (this.ctx) { if (this.ctx.state === 'suspended') this.ctx.resume(); return; }
     try { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return; }
     const c = this.ctx;
-    this.out = c.createGain(); this.out.gain.value = this.muted ? 0 : 0.55; this.out.connect(c.destination);
-    this.mus = c.createGain(); this.mus.gain.value = this.musicOn ? 0.16 : 0; this.mus.connect(this.out);
+    this.out = c.createGain(); this.out.gain.value = this.outGain(); this.out.connect(c.destination);
+    this.mus = c.createGain(); this.mus.gain.value = this.musGain(); this.mus.connect(this.out);
     const len = c.sampleRate; const b = c.createBuffer(1, len, c.sampleRate); const d = b.getChannelData(0);
     for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
     this.noiseBuf = b;
     this.startMusic();
   },
-  setMuted(m) { this.muted = m; store.set('mvs_mute', m); if (this.out) this.out.gain.value = m ? 0 : 0.55; },
-  setMusic(m) { this.musicOn = m; store.set('mvs_music', m); if (this.mus) this.mus.gain.value = m ? 0.16 : 0; },
+  outGain() { return this.muted ? 0 : 0.7 * OPT.vol / 100; },
+  musGain() { return this.musicOn ? 0.32 * OPT.musVol / 100 : 0; },
+  applyVolumes() { if (this.out) this.out.gain.value = this.outGain(); if (this.mus) this.mus.gain.value = this.musGain(); },
+  setMuted(m) { this.muted = m; store.set('mvs_mute', m); this.applyVolumes(); },
+  setMusic(m) { this.musicOn = m; store.set('mvs_music', m); this.applyVolumes(); },
   tone(f, dur, o = {}) {
     if (!this.ctx) return; const c = this.ctx; const t = c.currentTime + (o.delay || 0);
     const osc = c.createOscillator(), g = c.createGain();
@@ -910,7 +1005,7 @@ function resetEntities() {
   sauce.root.position.set(rand(-6, 6), 0, -16); sauce.root.rotation.set(0, 0, 0); sauce.root.visible = true;
   sauce.model.root.visible = true; sauce.sheep.root.visible = false; sauce.sheep.pose.rotation.set(0, 0, 0); sauce.model.pose.rotation.set(0, 0, 0); sauce.model.pose.position.set(0, 0, 0);
   setOpacity(sauce.model, 0.25); rootRing.visible = false;
-  game.target = false; game.troll = null; game.over = false; game.tasks = []; game.camOverride = null; game.slowWorld = false; game.shake = 0;
+  game.target = false; game.troll = null; game.over = false; game.paused = false; game.tasks = []; game.camOverride = null; game.slowWorld = false; game.shake = 0;
   for (const e of game.extras) { scene.remove(e); } game.extras = [];
   for (const p of extraPlates) p.el.remove(); extraPlates.length = 0;
   for (const p of projectiles) scene.remove(p.mesh); projectiles.length = 0;
@@ -1023,7 +1118,7 @@ function killMage(cause, _unused, silentDefeat) {
 function hasTarget() { return game.target && !sauce.stealth && sauce.root.visible; }
 function tryTarget() { if (!sauce.stealth && sauce.root.visible) { game.target = true; return true; } return false; }
 function pressSpell(i) {
-  if (!game.running) return;
+  if (!game.running || game.paused) return;
   Snd.init();
   if (game.troll) { const ev = game.troll; if (ev.onSpell) ev.onSpell(i, SPELLS[i]); else uiError(pick(['Vous ne pouvez pas faire ça maintenant', 'Ce sort n\'est pas encore prêt'])); return; }
   if (mage.dead || game.over) return;
@@ -1248,8 +1343,8 @@ function updateMage(dt) {
   if (!m.dead) m.mana = Math.min(m.maxMana, m.mana + 16 * dt);
   // Direction voulue (clavier + joystick), relative à la caméra
   let ix = 0, iz = 0;
-  if (keys.KeyW || keys.ArrowUp) iz += 1; if (keys.KeyS || keys.ArrowDown) iz -= 1;
-  if (keys.KeyA || keys.ArrowLeft) ix -= 1; if (keys.KeyD || keys.ArrowRight) ix += 1;
+  if (act.fwd > 0) iz += 1; if (act.back > 0) iz -= 1;
+  if (act.left > 0) ix -= 1; if (act.right > 0) ix += 1;
   ix += joy.x; iz += joy.y;
   const len = Math.hypot(ix, iz); if (len > 1) { ix /= len; iz /= len; }
   const fx = -Math.sin(cam.yaw), fz = -Math.cos(cam.yaw), rx = Math.cos(cam.yaw), rz = -Math.sin(cam.yaw);
@@ -1716,7 +1811,7 @@ function makeToolkit(runId) {
   };
   return T;
 }
-Snd.setMusicTemp = function (on) { if (this.mus) this.mus.gain.value = on && this.musicOn ? 0.16 : 0; };
+Snd.setMusicTemp = function (on) { if (this.mus) this.mus.gain.value = on ? this.musGain() : 0; };
 
 /* ---------- Sac mélangé (localStorage) : jamais deux fois le même avant d'avoir tout vu ---------- */
 function nextEventId() {
@@ -1787,20 +1882,129 @@ updateAttemptUI();
    18. ENTRÉES : clavier, souris, tactile
    ===================================================================== */
 function doTab() { if (!game.running) return; if (game.troll && !sauce.root.visible) return uiError('Aucune cible'); if (!tryTarget()) uiError('Aucun ennemi en vue'); }
-const DIGITS = ['Digit1', 'Digit2', 'Digit3', 'Digit4', 'Digit5', 'Digit6', 'Digit7', 'Digit8', 'Digit9', 'Digit0'];
-const NUMPAD = ['Numpad1', 'Numpad2', 'Numpad3', 'Numpad4', 'Numpad5', 'Numpad6', 'Numpad7', 'Numpad8', 'Numpad9', 'Numpad0'];
+/* ---------- Raccourcis : touche (e.code) -> action ---------- */
+let codeToAction = {};
+function rebuildBindMap() {
+  codeToAction = {};
+  for (const a of ACTIONS) for (const c of (OPT.binds[a.id] || [])) if (c) codeToAction[c] = a.id;
+  // Libellé de touche sur chaque bouton de sort
+  SPELLS.forEach((sp, i) => { const c = (OPT.binds['spell' + i] || [])[0]; btns[i].el.querySelector('.k').textContent = c ? keyLabel(c, true) : ''; });
+}
+function doJump() {
+  if (game.running && !game.paused && !mage.dead && mage.root.position.y === 0 && mage.stun <= 0 && mage.iceBlock <= 0 && !mage.frozen && !game.troll) { mage.vy = 7.5; if (mage.cast) cancelCast(); }
+}
 addEventListener('keydown', e => {
   const c = e.code;
-  if (['Tab', 'Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(c)) e.preventDefault();
-  let i = DIGITS.indexOf(c); if (i < 0) i = NUMPAD.indexOf(c);
-  if (i >= 0) { if (!e.repeat) { pressSpell(i); const b = btns[i].el; b.classList.add('press'); setTimeout(() => b.classList.remove('press'), 120); } return; }
-  if (c === 'Tab') { doTab(); return; }
-  if (c === 'Escape') { game.target = false; return; }
-  if (c === 'Space' && game.running && !mage.dead && mage.root.position.y === 0 && mage.stun <= 0 && mage.iceBlock <= 0 && !mage.frozen && !game.troll) { mage.vy = 7.5; if (mage.cast) cancelCast(); }
-  keys[c] = true;
+  if (rebinding) { e.preventDefault(); finishRebind(c); return; }
+  if (c === 'Escape') { // Échap : ferme les options, sinon enlève la cible, sinon ouvre les options
+    e.preventDefault();
+    if (optionsOpen()) closeOptions(); else if (game.target && game.running) game.target = false; else openOptions();
+    return;
+  }
+  if (optionsOpen()) return;
+  const a = codeToAction[c];
+  if (a || ['Tab', 'Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(c)) e.preventDefault();
+  if (!a) return;
+  if (a.startsWith('spell')) {
+    const i = +a.slice(5);
+    if (!e.repeat) { pressSpell(i); const b = btns[i].el; b.classList.add('press'); setTimeout(() => b.classList.remove('press'), 120); }
+    return;
+  }
+  if (a === 'target') { if (!e.repeat) doTab(); return; }
+  if (a === 'jump') { doJump(); return; }
+  act[a] = (act[a] || 0) + (keys[c] ? 0 : 1); keys[c] = true;
 });
-addEventListener('keyup', e => { keys[e.code] = false; });
-addEventListener('blur', () => { for (const k in keys) keys[k] = false; });
+addEventListener('keyup', e => { const a = codeToAction[e.code]; if (keys[e.code] && a && act[a]) act[a]--; keys[e.code] = false; });
+addEventListener('blur', () => { for (const k in keys) keys[k] = false; for (const k in act) act[k] = 0; });
+
+/* =====================================================================
+   18 bis. MENU OPTIONS (touches, caméra, son, interface)
+   ===================================================================== */
+let rebinding = null; // { action, slot, el }
+const optionsOpen = () => !$('options').classList.contains('hidden');
+let pausedByOptions = false;
+function openOptions() {
+  renderOptions(); $('options').classList.remove('hidden'); $('tooltip').classList.add('hidden');
+  // Pause pendant le combat (sauf pendant un événement : il continue)
+  if (game.running && !game.troll && !game.over) { game.paused = true; pausedByOptions = true; }
+  for (const k in keys) keys[k] = false; for (const k in act) act[k] = 0; joy.x = joy.y = 0;
+}
+function closeOptions() {
+  cancelRebind(); $('options').classList.add('hidden');
+  if (pausedByOptions) { game.paused = false; pausedByOptions = false; last = performance.now(); }
+}
+function cancelRebind() { if (rebinding) { rebinding.el.classList.remove('wait'); rebinding = null; renderBinds(); } }
+function finishRebind(code) {
+  const r = rebinding; rebinding = null;
+  if (code !== 'Escape') {
+    if (!OPT.binds[r.action]) OPT.binds[r.action] = ['', ''];
+    if (code === 'Backspace' || code === 'Delete') OPT.binds[r.action][r.slot] = '';
+    else {
+      // Une touche ne peut servir qu'à une seule action : on la retire ailleurs
+      for (const id in OPT.binds) OPT.binds[id] = OPT.binds[id].map(c => c === code ? '' : c);
+      OPT.binds[r.action][r.slot] = code;
+    }
+    saveOpts();
+  }
+  renderBinds();
+}
+function renderBinds() {
+  const box = $('optbinds'); let html = '';
+  for (const g of ['Déplacement', 'Combat', 'Sorts']) {
+    html += `<div class="og">${g}</div>`;
+    for (const a of ACTIONS.filter(a => a.group === g)) {
+      const b = OPT.binds[a.id] || ['', ''];
+      html += `<div class="orow"><span class="ol">${a.label}</span>` + [0, 1].map(s => `<button class="kb${b[s] ? '' : ' empty'}" data-a="${a.id}" data-s="${s}">${b[s] ? keyLabel(b[s]) : '—'}</button>`).join('') + '</div>';
+    }
+  }
+  box.innerHTML = html;
+  box.querySelectorAll('.kb').forEach(el => el.addEventListener('click', () => {
+    cancelRebind(); rebinding = { action: el.dataset.a, slot: +el.dataset.s, el }; el.classList.add('wait'); el.textContent = 'Appuie sur une touche…';
+  }));
+}
+function renderOptions() {
+  $('optTabKeys').classList.toggle('hidden', isTouch);
+  renderBinds();
+  $('o_sens').value = OPT.sens; $('o_sensv').textContent = Math.round(OPT.sens * 100) + ' %';
+  $('o_inv').checked = OPT.invertY;
+  $('o_vol').value = OPT.vol; $('o_volv').textContent = OPT.vol + ' %';
+  $('o_mus').value = OPT.musVol; $('o_musv').textContent = OPT.musVol + ' %';
+  $('o_btn').value = OPT.btnScale; $('o_btnv').textContent = Math.round(OPT.btnScale * 100) + ' %';
+  $('o_ft').checked = OPT.floats; $('o_chat').checked = OPT.chat;
+  $('o_btnrow').classList.toggle('hidden', !isTouch);
+}
+function applyOpts() {
+  document.documentElement.style.setProperty('--btnscale', OPT.btnScale);
+  document.body.classList.toggle('nofloats', !OPT.floats);
+  document.body.classList.toggle('nochat', !OPT.chat);
+  Snd.applyVolumes();
+  rebuildBindMap();
+}
+function saveOpts() { store.set('mvs_opts', OPT); applyOpts(); }
+const bindSlider = (id, key, fmtv, num = parseFloat) => $(id).addEventListener('input', e => { OPT[key] = num(e.target.value); $(id + 'v').textContent = fmtv(OPT[key]); saveOpts(); });
+bindSlider('o_sens', 'sens', v => Math.round(v * 100) + ' %');
+bindSlider('o_vol', 'vol', v => v + ' %', v => parseInt(v, 10));
+bindSlider('o_mus', 'musVol', v => v + ' %', v => parseInt(v, 10));
+bindSlider('o_btn', 'btnScale', v => Math.round(v * 100) + ' %');
+$('o_inv').addEventListener('change', e => { OPT.invertY = e.target.checked; saveOpts(); });
+$('o_ft').addEventListener('change', e => { OPT.floats = e.target.checked; saveOpts(); });
+$('o_chat').addEventListener('change', e => { OPT.chat = e.target.checked; saveOpts(); });
+$('o_close').addEventListener('click', closeOptions);
+$('o_resetkeys').addEventListener('click', () => { cancelRebind(); OPT.binds = defaultBinds(); saveOpts(); renderBinds(); });
+$('o_resetall').addEventListener('click', () => { cancelRebind(); OPT = defaultOpts(); saveOpts(); renderOptions(); });
+$('optbtn').addEventListener('click', e => { e.stopPropagation(); openOptions(); });
+$('menuopt').addEventListener('click', () => openOptions());
+$('options').addEventListener('pointerdown', e => { if (e.target.id === 'options') closeOptions(); });
+document.querySelectorAll('.otab').forEach(t => t.addEventListener('click', () => {
+  document.querySelectorAll('.otab').forEach(x => x.classList.toggle('on', x === t));
+  document.querySelectorAll('.opane').forEach(p => p.classList.toggle('hidden', p.id !== t.dataset.p));
+}));
+if (isTouch) { document.querySelectorAll('.otab')[1].click(); }
+// Clavier AZERTY / QWERTZ : affiche les vraies lettres si le navigateur sait les donner
+if (navigator.keyboard && navigator.keyboard.getLayoutMap) {
+  navigator.keyboard.getLayoutMap().then(m => { layoutMap = m; rebuildBindMap(); if (optionsOpen()) renderBinds(); }).catch(() => {});
+}
+applyOpts();
 
 // Caméra : glisser (souris ou doigt) n'importe où sauf sur l'interface
 const canvas = renderer.domElement; const drags = new Map();
@@ -1809,7 +2013,7 @@ canvas.addEventListener('pointermove', e => {
   const d = drags.get(e.pointerId); if (!d) return;
   const dx = e.clientX - d.x, dy = e.clientY - d.y; d.x = e.clientX; d.y = e.clientY; d.moved += Math.abs(dx) + Math.abs(dy);
   if (game.camOverride) return;
-  cam.yaw -= dx * (isTouch ? 0.008 : 0.006); cam.pitch = clamp(cam.pitch + dy * (isTouch ? 0.006 : 0.005), 0.05, 1.25);
+  cam.yaw -= dx * (isTouch ? 0.008 : 0.006) * OPT.sens; cam.pitch = clamp(cam.pitch + dy * (isTouch ? 0.006 : 0.005) * OPT.sens * (OPT.invertY ? -1 : 1), 0.05, 1.25);
 });
 const endDrag = e => {
   const d = drags.get(e.pointerId); drags.delete(e.pointerId);
@@ -1855,7 +2059,8 @@ function loop(now) {
   requestAnimationFrame(loop);
   let dt = Math.min(0.05, (now - last) / 1000) * game.speed; last = now;
   game.time += dt;
-  if (game.started && game.running) {
+  if (game.paused) dt = 0;
+  if (game.started && game.running && !game.paused) {
     updateMage(dt);
     updateAI(dt);
     updateProjectiles(dt);
