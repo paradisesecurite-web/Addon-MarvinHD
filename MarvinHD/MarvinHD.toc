@@ -1,0 +1,8 @@
+## Interface: 11509, 11508
+## Title: |cffff8000MarvinHD|r
+## Notes: Se moque gentiment de Marvin HD à chaque fois que tu cibles un mob.
+## Author: Un pote de Marvin
+## Version: 1.0.0
+## SavedVariables: MarvinHDDB
+
+MarvinHD.lua
