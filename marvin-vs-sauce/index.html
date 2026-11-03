@@ -157,6 +157,54 @@ body.touch #errors div{font-size:14px}
 #death .line b{color:#ff5a3a}
 #death .mock{font-style:italic;color:#f3e2c0;margin:12px 0 16px;font-size:15px}
 #death .best{font-size:12px;color:#aaa;margin-top:10px}
+/* ---------- Quiz « Quel perso dois-tu jouer ? » ---------- */
+.quizbtn{margin-top:12px;background:linear-gradient(#1d3f7a,#0c1f45);color:#ffe9a8;box-shadow:0 4px 0 #050d20,0 0 18px rgba(80,140,255,.45);font-size:clamp(16px,2.8vw,22px)}
+#quiz{position:fixed;inset:0;z-index:50;overflow-y:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y;
+  background:radial-gradient(ellipse at 50% 0%,#4a2410 0%,#1e0d05 55%,#0c0502 100%)}
+.qz-wrap{min-height:100%;display:flex;align-items:center;justify-content:center;padding:calc(14px + env(safe-area-inset-top)) calc(12px + env(safe-area-inset-right)) calc(18px + env(safe-area-inset-bottom)) calc(12px + env(safe-area-inset-left))}
+.qz-panel{width:min(640px,100%);background:rgba(14,9,6,.92);border:3px solid var(--gold);border-radius:12px;padding:18px 18px 20px;box-shadow:0 0 40px #000,inset 0 0 30px rgba(120,60,10,.25);text-align:left}
+.qz-in{animation:qzIn .28s ease-out}
+.qz-out{animation:qzOut .18s ease-in forwards}
+@keyframes qzIn{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:none}}
+@keyframes qzOut{to{opacity:0;transform:translateX(-30px)}}
+.qz-kicker{font-size:12px;letter-spacing:1px;text-transform:uppercase;color:#c9a64a}
+.qz-title{font-family:Cinzel,Georgia,serif;font-size:clamp(24px,6vw,36px);color:#ffd36a;margin:6px 0 10px;text-shadow:0 2px 0 #6a2a00,2px 2px 0 #000}
+.qz-lead{font-size:15px;line-height:1.5;color:#eadcc0;margin:8px 0}
+.qz-actions{text-align:center;margin-top:14px}
+.qz-link{background:none;border:none;color:#bba;text-decoration:underline;font-size:13px;cursor:pointer;padding:6px}
+.qz-top{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:#ffd100}
+.qz-prog{height:8px;background:#1a0f08;border:1px solid #5a4020;border-radius:5px;overflow:hidden;margin:6px 0 14px}
+.qz-prog i{display:block;height:100%;background:linear-gradient(90deg,#c9a64a,#ffe27a);transition:width .4s ease}
+.qz-q{font-family:Cinzel,Georgia,serif;font-weight:700;font-size:clamp(18px,4.6vw,23px);line-height:1.35;color:#fff3d6;margin:4px 0 16px}
+.qz-answers{display:flex;flex-direction:column;gap:9px}
+.qz-ans{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:13px 14px;font-size:15.5px;line-height:1.35;color:#f2e6cc;cursor:pointer;
+  background:linear-gradient(#2e1d10,#1a1008);border:2px solid #5a4020;border-radius:8px;transition:border-color .15s,transform .1s}
+.qz-ans b{flex:none;width:24px;height:24px;border-radius:50%;background:#3e2614;color:#ffd36a;font-size:12px;display:flex;align-items:center;justify-content:center}
+.qz-ans:hover{border-color:var(--gold)} .qz-ans:active,.qz-ans.on{transform:scale(.98);border-color:#ffe27a;background:linear-gradient(#4a2e14,#2a180a)}
+body.touch .qz-ans b{display:none}
+.qz-sheet{--cc:#ffd36a}
+.qz-head{display:flex;gap:14px;align-items:center;border-bottom:1px solid #5a4020;padding-bottom:12px;margin-bottom:6px}
+.qz-por{flex:none;width:70px;height:70px;border-radius:50%;border:3px solid var(--cc);background:radial-gradient(circle at 40% 35%,#6b4a24,#1a0d06);display:flex;align-items:center;justify-content:center;font-size:36px;box-shadow:0 0 14px var(--cc)}
+.qz-res{font-family:Cinzel,Georgia,serif;font-size:clamp(24px,6.5vw,34px);margin:2px 0 4px;color:var(--cc);text-shadow:2px 2px 0 #000}
+.qz-spec{font-size:14px;color:#eadcc0;line-height:1.4} .qz-spec b{color:#ffd100}
+.qz-sec{margin-top:12px} .qz-sec h3{margin:0 0 5px;font-size:14px;color:#ffd100;text-transform:uppercase;letter-spacing:.5px}
+.qz-sec p,.qz-sec li{font-size:14.5px;line-height:1.5;color:#eadcc0;margin:0}
+.qz-sec ul{margin:0;padding-left:18px} .qz-sec li{margin:3px 0}
+.qz-hl{margin-top:8px!important;background:rgba(255,210,100,.06);border-left:3px solid var(--cc);border-radius:4px;padding:6px 8px 6px 22px!important}
+.qz-cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:520px){.qz-cols{grid-template-columns:1fr}}
+.qz-concl{font-style:italic;color:#ffe9b0;text-align:center;font-size:15.5px;margin:14px 0 0}
+.qz-bar{display:flex;align-items:center;gap:8px;margin:6px 0;font-size:14px}
+.qz-bn{width:128px;flex:none;color:#f2e6cc} .qz-bp{width:44px;text-align:right;color:#ffd36a;flex:none}
+.qz-bt{flex:1;height:14px;background:#1a0f08;border:1px solid #000;border-radius:3px;overflow:hidden}
+.qz-bt i{display:block;height:100%;animation:qzBar .9s ease-out}
+@keyframes qzBar{from{width:0!important}}
+.qz-worst h3{color:#ff6a4a} .qz-worst b{color:#ffb0a0}
+.qz-wink{text-align:center;color:#c9a64a;font-size:13px;margin-top:16px}
+.qz-btns{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center}
+.qz-btns .medbtn{margin-top:0}
+.qz-copied{text-align:center;color:#7f7;font-size:13px;min-height:18px;margin-top:8px}
+
 /* ---------- Options ---------- */
 .medbtn{pointer-events:auto;margin-top:12px;font-size:14px;color:#ffe9a8;cursor:pointer;padding:7px 18px;border-radius:6px;border:2px solid var(--gold);background:linear-gradient(#4a2a14,#24140a)}
 #options{z-index:55;background:rgba(0,0,0,.55)}
@@ -268,6 +316,7 @@ body.nochat #chat{display:none}
   <h1>Marvin HD <em>contre</em> Sauce</h1>
   <h2>Duel devant les portes d'Orgrimmar</h2>
   <button class="bigbtn" id="startbtn">Entrer dans l'arène</button>
+  <button class="bigbtn quizbtn" id="quizbtn">Quel perso dois-tu jouer ?</button>
   <button class="medbtn" id="menuopt">⚙️ Options</button>
   <div class="ctrls" id="ctrlpc">
     <b>Déplacement :</b> ZQSD ou flèches — <b>Saut :</b> Espace<br>
@@ -281,7 +330,7 @@ body.nochat #chat{display:none}
     Joue en mode paysage. Kite, gèle, blink. Bonne chance.
   </div>
   <div class="small" id="menuatt"></div>
-  <div class="small" style="opacity:.6">Version 2 — avec menu Options</div>
+  <div class="small" style="opacity:.6">Version 3 — avec le test « Quel perso dois-tu jouer ? »</div>
 </div>
 
 <div id="death" class="screen hidden">
@@ -295,6 +344,8 @@ body.nochat #chat{display:none}
     <div class="best" id="dbest"></div>
   </div>
 </div>
+
+<div id="quiz" class="hidden"></div>
 
 <div id="options" class="screen hidden">
   <div class="opanel">
@@ -328,6 +379,10 @@ body.nochat #chat{display:none}
   // Si le module 3D ne charge pas (pas de réseau), on prévient le joueur.
   setTimeout(function(){ if(!window.__mvsReady){ document.getElementById('loaderr').classList.remove('hidden'); } }, 12000);
 </script>
+
+<!-- Quiz « Quel perso dois-tu jouer ? » : banque de questions + moteur (scripts séparés, faciles à modifier) -->
+<script src="quiz-data.js"></script>
+<script src="quiz.js"></script>
 
 <script type="module">
 import * as THREE from 'three';
@@ -828,7 +883,7 @@ function updateLabels(dt) {
     if (!p.vis) { el.style.display = 'none'; return; }
     el.style.display = ''; el.style.transform = `translate(${p.x}px,${p.y}px) translate(-50%,-100%)`;
   };
-  place(npMage, mage.root, mage.sheepForm ? 2.0 : 3.1, !mage.hideName);
+  place(npMage, mage.root, mage.sheepForm ? 2.0 : 3.1, !mage.hideName && game.started);
   place(npSauce, sauce.root, sauce.poly > 0 ? 2.0 : 2.85, sauce.root.visible && !sauce.stealth && game.started);
   for (const p of extraPlates) place(p.el, p.obj, p.h, p.obj.visible !== false);
   for (let i = floats.length - 1; i >= 0; i--) {
@@ -1851,7 +1906,7 @@ function startFight() {
   game.assist = Math.max(0.55, 0.92 - 0.06 * (game.attempts - 1)); // le voleur tape un peu moins fort à chaque essai
   updateAttemptUI();
   game.started = true; game.running = false;
-  $('hud').classList.remove('hidden'); $('death').classList.add('hidden'); $('menu').classList.add('hidden');
+  $('hud').classList.remove('hidden'); $('death').classList.add('hidden'); $('menu').classList.add('hidden'); onResize();
   raidWarn('Le duel commence !', 'gold', 1200);
   const id = game.runId;
   setTimeout(() => { if (game.runId !== id) return; game.running = true; chat('Sauce rôde quelque part, camouflé…', 'sys'); setTimeout(() => game.runId === id && !game.troll && sauceSay(pick(['prêt à mourir ?', 'tu vas pleurer', 'allez, je te laisse une chance'])), 1500); }, 1000 / game.speed);
@@ -1896,6 +1951,7 @@ function doJump() {
 }
 addEventListener('keydown', e => {
   const c = e.code;
+  if (window.__mvsQuizOpen) return; // le quiz gère ses propres touches
   if (rebinding) { e.preventDefault(); finishRebind(c); return; }
   if (c === 'Escape') { // Échap : ferme les options, sinon enlève la cible, sinon ouvre les options
     e.preventDefault();
@@ -2048,7 +2104,8 @@ document.addEventListener('gesturestart', e => e.preventDefault());
 // Orientation et redimensionnement
 function onResize() {
   renderer.setSize(innerWidth, innerHeight); camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix();
-  $('rotate').classList.toggle('hidden', !(isTouch && innerHeight > innerWidth));
+  // L'écran « tourne ton téléphone » ne s'affiche que pendant le duel (l'accueil et le quiz marchent en portrait)
+  $('rotate').classList.toggle('hidden', !(isTouch && innerHeight > innerWidth && game.started && !window.__mvsQuizOpen && $('menu').classList.contains('hidden')));
 }
 addEventListener('resize', onResize); addEventListener('orientationchange', () => setTimeout(onResize, 200)); onResize();
 
@@ -2058,6 +2115,7 @@ addEventListener('resize', onResize); addEventListener('orientationchange', () =
 let last = performance.now();
 function loop(now) {
   requestAnimationFrame(loop);
+  if (window.__mvsQuizOpen) { last = now; return; } // le quiz est en HTML pur : on met la 3D en pause
   let dt = Math.min(0.05, (now - last) / 1000) * game.speed; last = now;
   game.time += dt;
   if (game.paused) dt = 0;
@@ -2083,6 +2141,8 @@ resetEntities(); game.started = false; sauce.root.position.set(4, 0, -20); setOp
 mage.root.position.set(-3, 0, -14); mage.root.rotation.y = Math.PI / 2; sauce.root.rotation.y = -Math.PI / 2;
 requestAnimationFrame(loop);
 window.__mvsReady = true;
+// Petits sons pour le quiz (respectent le bouton « couper le son »)
+window.__mvsSfx = k => { Snd.init(); if (k === 'click') Snd.tone(720, 0.07, { type: 'triangle', vol: 0.07 }); else if (k === 'result') Snd.fanfare(); };
 
 /* Accès pour tests automatisés (console) */
 window.__mvs = { game, mage, sauce, EVENTS, SPELLS, startTroll, damageSauce, pressSpell, startFight, nextEventId, setSpeed: s => game.speed = s };
