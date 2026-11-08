@@ -1,0 +1,8 @@
+## Interface: 16001
+## Title: |cff33ff33SprintAlert|r
+## Notes: Alerte texte + son quand le Sprint du voleur est de nouveau disponible.
+## Author: Paradise
+## Version: 1.0.0
+## SavedVariables: SprintAlertDB
+
+SprintAlert.lua
