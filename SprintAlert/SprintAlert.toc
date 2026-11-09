@@ -2,7 +2,7 @@
 ## Title: |cff33ff33SprintAlert|r
 ## Notes: Alertes voleur : Sprint de nouveau disponible et Riposte après une parade.
 ## Author: Paradise
-## Version: 1.1.0
+## Version: 1.1.1
 ## SavedVariables: SprintAlertDB
 
 SprintAlert.lua

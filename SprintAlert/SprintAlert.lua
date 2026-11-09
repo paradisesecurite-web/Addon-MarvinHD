@@ -257,7 +257,7 @@ local function alerteRiposte()
     afficherAlerte(TEXTE_RIPOSTE, db.sonRiposte)
 end
 
--- Détection n°2 : Riposte passe de "pas utilisable" à "utilisable"
+-- Détection : Riposte passe de "pas utilisable" à "utilisable"
 local function verifierRiposte()
     if not estVoleur or not riposteID then return end
     local active = lireRiposteActive()
@@ -266,26 +266,6 @@ local function verifierRiposte()
         alerteRiposte()
     end
     riposteActive = active
-end
-
--- Détection n°1 : combat log (peut être bloqué en API 12.x, d'où les protections)
-local lireCombatLog = CombatLogGetCurrentEventInfo
-    or (C_CombatLog and C_CombatLog.GetCurrentEventInfo)
-
-local function surCombatLog()
-    if not estVoleur or not riposteID or not lireCombatLog then return end
-    local ok, _, sousEvent, _, _, _, _, _, destGUID, _, _, _, a12, _, _, a15 = pcall(lireCombatLog)
-    if not ok or not sousEvent or not destGUID then return end
-    if estSecret(destGUID) or destGUID ~= UnitGUID("player") then return end
-    local typeRate
-    if sousEvent == "SWING_MISSED" then
-        typeRate = a12                     -- SWING : missType en 12e position
-    elseif sousEvent == "SPELL_MISSED" or sousEvent == "RANGE_MISSED" then
-        typeRate = a15                     -- SPELL/RANGE : après spellId, nom, école
-    end
-    if typeRate == "PARRY" then
-        alerteRiposte()
-    end
 end
 
 -- =====================================================================
@@ -316,13 +296,12 @@ ev:RegisterEvent("SPELL_UPDATE_COOLDOWN")
 ev:RegisterEvent("SPELL_UPDATE_USABLE")
 ev:RegisterEvent("SPELLS_CHANGED")
 ev:RegisterEvent("PLAYER_REGEN_ENABLED")   -- relecture à la sortie du combat
--- Le combat log peut être interdit aux addons selon le client : pcall
-local combatLogOK = pcall(ev.RegisterEvent, ev, "COMBAT_LOG_EVENT_UNFILTERED")
+-- Pas de COMBAT_LOG_EVENT_UNFILTERED : en API 12.x, s'y abonner est réservé
+-- à l'interface Blizzard et provoque "action bloquée". La parade est détectée
+-- quand Riposte devient utilisable (SPELL_UPDATE_USABLE).
 
 ev:SetScript("OnEvent", function(self, event, arg1)
-    if event == "COMBAT_LOG_EVENT_UNFILTERED" then
-        surCombatLog()
-    elseif event == "SPELL_UPDATE_USABLE" then
+    if event == "SPELL_UPDATE_USABLE" then
         verifierRiposte()
     elseif event == "SPELL_UPDATE_COOLDOWN" then
         verifierSprint()
@@ -380,8 +359,7 @@ local function afficherAide()
         msg("|cffffaa00Sort \"" .. NOM_SPRINT .. "\" introuvable dans ton grimoire.|r")
     end
     if riposteID then
-        msg("Riposte trouvée (ID " .. tostring(riposteID) .. ")"
-            .. (combatLogOK and "." or " - combat log indisponible, détection par usabilité seulement."))
+        msg("Riposte trouvée (ID " .. tostring(riposteID) .. ").")
     else
         msg("|cffffaa00Riposte introuvable dans ton grimoire (talent non pris ?) : alerte inactive.|r")
     end
