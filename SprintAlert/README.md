@@ -1,6 +1,9 @@
 # SprintAlert — WoW Forever (Classic+)
 
-Affiche **« SPRINT PRÊT ! »** en gros au centre de l'écran et joue un son quand le Sprint de ton voleur est de nouveau disponible.
+Deux alertes pour voleur, en gros au centre de l'écran avec un son :
+- **« SPRINT PRÊT ! »** quand Sprint revient de recharge ;
+- **« RIPOSTE ! »** quand tu pares une attaque et que Riposte est utilisable
+  (seulement si tu as le talent Riposte, et pas si Riposte est en recharge).
 
 ## Installation
 1. Copie le dossier `SprintAlert` dans le dossier `Interface\AddOns` **du client WoW Forever**
@@ -12,14 +15,20 @@ Affiche **« SPRINT PRÊT ! »** en gros au centre de l'écran et joue un son qu
    puis **OK**. S'il est marqué « périmé », coche **Charger les add-ons périmés**.
 
 ## Tester
-- En jeu, tape `/sa test` : le texte et le son doivent apparaître.
-- Utilise Sprint, attends 5 minutes : l'alerte se déclenche quand il est prêt.
+- `/sa test sprint` et `/sa test riposte` : le texte et le son (différents) doivent apparaître.
+- Sprint : utilise-le, attends 5 minutes, l'alerte se déclenche quand il est prêt.
+- Riposte : va voir un mob de ton niveau, laisse-le te taper de face sans attaquer
+  (ou en attaquant), et à la première parade « RIPOSTE ! » doit s'afficher.
+  Tape `/sa` pour vérifier que Riposte a bien été trouvée dans ton grimoire.
 
 ## Commandes
 - `/sa` : aide + réglages actuels
-- `/sa test` : joue l'alerte complète
-- `/sa mode texte` / `/sa mode son` / `/sa mode les deux`
-- `/sa son <id>` : change le son (ex. `/sa son 8959`, le son par défaut)
+- `/sa test` ou `/sa test sprint` : joue l'alerte Sprint
+- `/sa test riposte` : joue l'alerte Riposte
+- `/sa mode texte` / `/sa mode son` / `/sa mode les deux` (pour toutes les alertes)
+- `/sa son <id>` : son du Sprint (8959 par défaut)
+- `/sa sonriposte <id>` : son de Riposte (12867 par défaut)
+- `/sa riposte on` / `/sa riposte off` : active ou coupe l'alerte Riposte
 - `/sa taille <nombre>` : taille du texte (10 à 200, 48 par défaut)
 
 Les réglages sont sauvegardés (SavedVariable `SprintAlertDB`).

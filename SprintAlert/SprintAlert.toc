@@ -1,8 +1,8 @@
 ## Interface: 16001
 ## Title: |cff33ff33SprintAlert|r
-## Notes: Alerte texte + son quand le Sprint du voleur est de nouveau disponible.
+## Notes: Alertes voleur : Sprint de nouveau disponible et Riposte après une parade.
 ## Author: Paradise
-## Version: 1.0.0
+## Version: 1.1.0
 ## SavedVariables: SprintAlertDB
 
 SprintAlert.lua
